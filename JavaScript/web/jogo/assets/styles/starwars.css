@@ -1,0 +1,30 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+html,body{
+    width: 100%;
+    height: 100%;
+}
+#panel>h5{
+    font-size: 2em;
+    color: red;
+}
+
+#placar{
+    background-color: #fffA;
+    position: fixed;
+    right: 0;
+    top: 0;
+    padding: 20px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+#placar>span{
+    font-size: 2em;
+}
