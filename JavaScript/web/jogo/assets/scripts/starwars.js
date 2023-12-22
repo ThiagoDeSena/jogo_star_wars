@@ -1,9 +1,10 @@
 const tela = document.getElementsByTagName('body')[0]
 const game = new Game()
 let nave
-let inimigos = []
-const velocidademovimento = 5
-const maxinimigos = 10
+const inimigos = []
+const velocidademovimento = 10
+const maxinimigos = 0
+const laser_aliados = []
 let intervalo
 
 tela.addEventListener('keyup', function(event){
@@ -12,6 +13,10 @@ tela.addEventListener('keyup', function(event){
         
     }else if(event.key == 'p'){
         game.pause('Pause')
+    }
+
+    if(event.key == ' '){
+        nave.fire()
     }
 })
 
@@ -70,22 +75,12 @@ function Game(){
     }
 }
 
-function Nave(imagem = 'wt'){
-    // <div class="nave">
-    //     <img src="assets/images/mf.png" alt="">
-    // </div>
-    let div = document.createElement('div')
-    div.classList.add('nave')
-    let i = document.createElement('img')
-    i.src = `assets/images/${imagem}.png`
-    div.appendChild(i)
-    tela.appendChild(div)
+function Ovni(elemento){
     
-
-    this.w = () => div.getBoundingClientRect().width
-    this.h = () => div.getBoundingClientRect().height
-    this.x = () => div.getBoundingClientRect().x
-    this.y = () => div.getBoundingClientRect().y
+    this.w = () => elemento.getBoundingClientRect().width
+    this.h = () => elemento.getBoundingClientRect().height
+    this.x = () => elemento.getBoundingClientRect().x
+    this.y = () => elemento.getBoundingClientRect().y
 
 
     this.setXY = (x,y) => {
@@ -95,12 +90,22 @@ function Nave(imagem = 'wt'){
             x=game.w() - this.w()
         }
 
-        div.style.left = `${x}px`
-        div.style.top = `${y}px`
+        elemento.style.left = `${x}px`
+        elemento.style.top = `${y}px`
     }
 
+}
+
+
+function Nave(imagem = 'wt'){
     
+    let div = elemento('div','nave')
+    Ovni.call(this,div)
+    let i = document.createElement('img')
+    i.src = `assets/images/${imagem}.png`
+    div.appendChild(i)
     
+
 
     let posicaoInicial = () => {
         this.setXY(
@@ -111,6 +116,18 @@ function Nave(imagem = 'wt'){
 
     i.onload = posicaoInicial
     this.onload = (fn) => i.onload = fn
+
+}
+
+function NaveJogador(imagem = 'wt'){
+    Nave.call(this,imagem)
+    this.fire = () =>{
+        laser = new Laser()
+        let x = this.x() + this.w()/2 - laser.w()/2
+        let y = this.y() - laser.h() - 1
+        laser.setXY(x,y)
+        laser_aliados.push(laser)
+    }
 }
 
 function Inimigo(imagem = 'cp1'){
@@ -130,6 +147,20 @@ function Inimigo(imagem = 'cp1'){
     }
 
     this.onload(this.setPosicaoInicial)
+}
+
+function elemento(tag,classe){
+    let elemento = document.createElement(tag)
+    elemento.classList.add(classe)
+    tela.appendChild(elemento)
+    return elemento
+
+}
+
+function Laser(){
+    // <div class="laser inimigo"></div>
+    let div = elemento('div','laser')
+    Ovni.call(this,div)
 }
 
 game.start()

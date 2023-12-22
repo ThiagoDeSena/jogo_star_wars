@@ -34,3 +34,47 @@ html,body{
     z-index: 3;
     border: 3px red solid;
 }
+
+.laser{
+    position: fixed;
+    z-index: 4;
+    width: 2px;
+    height: 25px;
+    background-color: blue;
+    -webkit-animation: laser 1.5s ease-in-out infinite alternate;
+    -moz-animation: laser 1.5s ease-in-out infinite alternate;
+    animation: laser 1.5s ease-in-out infinite alternate;
+}
+
+.laser.inimigo{
+    background-color: red;
+}
+
+/*glow for webkit*/
+@-webkit-keyframes laser {
+    from {
+      box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #00d532, 0 0 70px #00d532, 0 0 80px #00d532, 0 0 100px #00d532, 0 0 150px #00d532;
+    }
+    to {
+      box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #00d532, 0 0 35px #00d532, 0 0 40px #00d532, 0 0 50px #00d532, 0 0 75px #00d532;
+    }
+  }
+  /*glow for mozilla*/
+  @-moz-keyframes laser {
+    from {
+      box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #00d532, 0 0 70px #00d532, 0 0 80px #00d532, 0 0 100px #00d532, 0 0 150px #00d532;
+    }
+    to {
+      box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #00d532, 0 0 35px #00d532, 0 0 40px #00d532, 0 0 50px #00d532, 0 0 75px #00d532;
+    }
+  }
+
+  /*glow*/
+@keyframes laser {
+    from {
+      box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #00d532, 0 0 70px #00d532, 0 0 80px #00d532, 0 0 100px #00d532, 0 0 150px #00d532;
+    }
+    to {
+      box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #00d532, 0 0 35px #00d532, 0 0 40px #00d532, 0 0 50px #00d532, 0 0 75px #00d532;
+    }
+  }
