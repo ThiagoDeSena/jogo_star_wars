@@ -46,7 +46,7 @@ function Game(){
     const placar = document.getElementById('placar')
     const painelMsg = painel.querySelector('.msg')
     let pause = true
-
+    let pontuacao = 0
 
     this.isPause = () => pause
     this.w = () => tela.getBoundingClientRect().width
@@ -85,6 +85,7 @@ function Game(){
                     inimigos[sorteio].fire()
                 }
             }
+            gerenciarColisoes()
         } ,100)
     }
 
@@ -94,6 +95,20 @@ function Game(){
         pause = true
         nave.moveStop()
         clearInterval(intervalo)
+    }
+
+    this.gameOver = () => {
+        this.pause('Game Over')
+        tela.addEventListener('keyup', function(event){
+            if(event.key == 'Enter'){
+                location.reload()
+            }
+        })
+    }
+
+    this.pontuar = () => {
+        pontuacao++
+        placar.querySelector('span').textContent = pontuacao
     }
 }
 
@@ -115,6 +130,9 @@ function Ovni(elemento){
         elemento.style.left = `${x}px`
         elemento.style.top = `${y}px`
     }
+    this.colisao = () => elemento.remove()
+    
+    this.remove = () => elemento.remove()
 
 }
 
@@ -159,6 +177,8 @@ function NaveJogador(imagem = 'wt'){
             ,
             this.y())
     }
+
+    this.colisao = () => game.gameOver()
 }
 
 function Inimigo(imagem = 'cp1'){
@@ -166,7 +186,7 @@ function Inimigo(imagem = 'cp1'){
     this.setPosicaoInicial = () => {
         let x = Math.round(Math.random() * (game.w()-this.w()))
         let y = Math.round(-this.h() - 10 - (Math.random() * 2000))
-        //y = 50
+        //y = 0
         this.setXY(x,y)
     }
 
@@ -186,6 +206,10 @@ function Inimigo(imagem = 'cp1'){
     }
 
     this.onload(this.setPosicaoInicial)
+    this.colisao = () => {
+        this.setPosicaoInicial()
+        game.pontuar()
+    }
 }
 
 function elemento(tag,classe){
@@ -209,7 +233,7 @@ function Laser(inimigo = false){
     this.animation = () => {
         this.setXY(this.x(),this.y()+velocidade_movimento*aceleracao_laser*deslocamento)
     }
-    this.remove = () => div.remove()
+    
 }
 
 function gerenciarLaser(lasers){
@@ -220,6 +244,38 @@ function gerenciarLaser(lasers){
             lista.splice(index, 1)
         }
     })
+}
+
+function gerenciarColisoes(){
+    let colisao = function(obj1,obj2){
+        let x = obj1.x() <= obj2.x() + obj2.w()
+            && obj1.x() + obj1.w() >= obj2.x()
+        let y = obj1.y() <= obj2.y() + obj2.h()
+            && obj1.y() + obj1.h() >= obj2.y()
+        console.log(`x:${x}`,`y:${y}`)
+        if(x && y){
+            obj1.colisao()
+            obj2.colisao()
+            return true
+        }
+        return false
+    }
+
+    inimigos.forEach((inimigo, ii, inimigos) => {
+        laser_aliados.forEach((laser,il, lasers) =>{
+            if(colisao(inimigo, laser)){
+                lasers.splice(il, 1)
+            }
+        })
+        colisao(nave, inimigo)
+    })
+
+    laser_inimigos.forEach((laser) => {
+        colisao(nave,laser)
+    })
+
+    
+    colisao(nave, inimigos[0])
 }
 
 game.start()
