@@ -15,17 +15,24 @@ tela.addEventListener('keyup', function(event){
         game.pause('Pause')
     }
 
-    if(event.key == ' '){
-        nave.fire()
+    if(!game.isPause()){
+        if(event.key == ' '){
+            nave.fire()
+        }
+    
+        if(event.key == 'ArrowLeft' || event.key == 'ArrowRight'){
+            nave.moveStop()
+        }
     }
+    
 })
 
 tela.addEventListener('keydown',function (event){
     if(!game.isPause()){
         if(event.key == 'ArrowLeft'){
-            nave.setXY(nave.x() - velocidademovimento,nave.y)
+            nave.moveLeft()
         }else if(event.key == 'ArrowRight'){
-            nave.setXY(nave.x() + velocidademovimento,nave.y)
+            nave.moveRigth()
         }
     }
     
@@ -48,7 +55,7 @@ function Game(){
         placar.style.display = 'flex'
         pause = false
         if(nave == undefined){
-            nave = new Nave()
+            nave = new NaveJogador()
             for(let cont = 0;cont<maxinimigos;cont++){
                 let imagem = 'cp1'
                 switch(Math.round(Math.random()*2)){
@@ -61,6 +68,7 @@ function Game(){
             }
         }
         intervalo = setInterval(() =>{
+            nave.animation()
             inimigos.forEach(inimigo => {
                 inimigo.animation()
             })
@@ -71,6 +79,7 @@ function Game(){
         painel.style.display = 'block'
         painelMsg.textContent = mensagem
         pause = true
+        nave.moveStop()
         clearInterval(intervalo)
     }
 }
@@ -104,29 +113,38 @@ function Nave(imagem = 'wt'){
     let i = document.createElement('img')
     i.src = `assets/images/${imagem}.png`
     div.appendChild(i)
-    
-
-
-    let posicaoInicial = () => {
-        this.setXY(
-            game.w()/2 - this.w()/2,
-            game.h() - this.h() - 10
-            )
-    }
-
-    i.onload = posicaoInicial
     this.onload = (fn) => i.onload = fn
 
 }
 
 function NaveJogador(imagem = 'wt'){
     Nave.call(this,imagem)
+    let deslocamento = 0
+    let posicaoInicial = () => {
+        this.setXY(
+            game.w()/2 - this.w()/2,
+            game.h() - this.h() - 10
+            )
+    }
+    this.onload(posicaoInicial)
     this.fire = () =>{
         laser = new Laser()
         let x = this.x() + this.w()/2 - laser.w()/2
         let y = this.y() - laser.h() - 1
         laser.setXY(x,y)
         laser_aliados.push(laser)
+    }
+    //parado 0
+    this.moveStop = () => deslocamento = 0
+    this.moveLeft = () => deslocamento = -1
+    this.moveRigth = () => deslocamento = 1
+    //esquerda - 1
+    //direita + 1
+    this.animation = () => {
+        this.setXY(
+            this.x() + velocidademovimento * deslocamento 
+            ,
+            this.y())
     }
 }
 
