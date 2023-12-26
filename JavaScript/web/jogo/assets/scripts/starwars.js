@@ -2,9 +2,12 @@ const tela = document.getElementsByTagName('body')[0]
 const game = new Game()
 let nave
 const inimigos = []
-const velocidademovimento = 10
-const maxinimigos = 0
+const velocidade_movimento = 10
+const max_inimigos = 10
 const laser_aliados = []
+const laser_inimigos = []
+const aceleracao_laser = 3
+const delay_lasers = 10
 let intervalo
 
 tela.addEventListener('keyup', function(event){
@@ -56,7 +59,7 @@ function Game(){
         pause = false
         if(nave == undefined){
             nave = new NaveJogador()
-            for(let cont = 0;cont<maxinimigos;cont++){
+            for(let cont = 0;cont<max_inimigos;cont++){
                 let imagem = 'cp1'
                 switch(Math.round(Math.random()*2)){
                     case 1: imagem = 'iba'
@@ -65,6 +68,7 @@ function Game(){
                         break
                 }
                 inimigos.push(new Inimigo(imagem))
+                
             }
         }
         intervalo = setInterval(() =>{
@@ -72,6 +76,15 @@ function Game(){
             inimigos.forEach(inimigo => {
                 inimigo.animation()
             })
+            gerenciarLaser(laser_aliados)
+            gerenciarLaser(laser_inimigos)
+            let sorteio = Math.round(Math.random()*delay_lasers)
+            console.log(sorteio)
+            if(sorteio < inimigos.length){
+                if(inimigos[sorteio].y()>0){
+                    inimigos[sorteio].fire()
+                }
+            }
         } ,100)
     }
 
@@ -142,7 +155,7 @@ function NaveJogador(imagem = 'wt'){
     //direita + 1
     this.animation = () => {
         this.setXY(
-            this.x() + velocidademovimento * deslocamento 
+            this.x() + velocidade_movimento * deslocamento 
             ,
             this.y())
     }
@@ -153,15 +166,23 @@ function Inimigo(imagem = 'cp1'){
     this.setPosicaoInicial = () => {
         let x = Math.round(Math.random() * (game.w()-this.w()))
         let y = Math.round(-this.h() - 10 - (Math.random() * 2000))
-        // y = 50
+        //y = 50
         this.setXY(x,y)
     }
 
     this.animation = () => {
-        this.setXY(this.x(),this.y() + velocidademovimento)
+        this.setXY(this.x(),this.y() + velocidade_movimento)
         if(this.y() > game.h()+20){
             this.setPosicaoInicial()
         }
+    }
+
+    this.fire = () =>{
+        laser = new Laser(1)
+        let x = this.x() + this.w()/2 - laser.w()/2
+        let y = this.y() + this.h() + 1
+        laser.setXY(x,y)
+        laser_inimigos.push(laser)
     }
 
     this.onload(this.setPosicaoInicial)
@@ -175,10 +196,30 @@ function elemento(tag,classe){
 
 }
 
-function Laser(){
+function Laser(inimigo = false){
     // <div class="laser inimigo"></div>
     let div = elemento('div','laser')
+    let deslocamento = -1
     Ovni.call(this,div)
+    if(inimigo){
+        div.classList.add('inimigo')
+        deslocamento = 1
+    }
+
+    this.animation = () => {
+        this.setXY(this.x(),this.y()+velocidade_movimento*aceleracao_laser*deslocamento)
+    }
+    this.remove = () => div.remove()
+}
+
+function gerenciarLaser(lasers){
+    lasers.forEach((item,index,lista) => {
+        item.animation()
+        if(item.y()>game.h()+10 || item.y()+item.h()+10 < 0){
+            item.remove()
+            lista.splice(index, 1)
+        }
+    })
 }
 
 game.start()
