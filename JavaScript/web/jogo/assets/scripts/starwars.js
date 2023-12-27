@@ -2,12 +2,12 @@ const tela = document.getElementsByTagName('body')[0]
 const game = new Game()
 let nave
 const inimigos = []
-const velocidade_movimento = 10
+const velocidade_movimento = 8
 const max_inimigos = 10
 const laser_aliados = []
 const laser_inimigos = []
 const aceleracao_laser = 3
-const delay_lasers = 10
+const delay_lasers = 20
 let intervalo
 
 tela.addEventListener('keyup', function(event){
@@ -86,7 +86,7 @@ function Game(){
                 }
             }
             gerenciarColisoes()
-        } ,100)
+        } ,50)
     }
 
     this.pause = (mensagem = '') => {
@@ -207,8 +207,16 @@ function Inimigo(imagem = 'cp1'){
 
     this.onload(this.setPosicaoInicial)
     this.colisao = () => {
-        this.setPosicaoInicial()
+        
         game.pontuar()
+        let explosao = elemento('img','explosao')
+        explosao.src = 'assets/images/explosao.gif'
+        explosao = new Ovni(explosao)
+        explosao.setXY(this.x(),this.y())
+        this.setPosicaoInicial()
+        setTimeout(()=>{
+            explosao.remove()
+        },900)
     }
 }
 
@@ -278,4 +286,3 @@ function gerenciarColisoes(){
     colisao(nave, inimigos[0])
 }
 
-game.start()

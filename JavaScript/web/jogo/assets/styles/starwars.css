@@ -33,7 +33,6 @@ html,body{
 .nave{
     position: fixed;
     z-index: 3;
-    border: 3px red solid;
 }
 
 .laser{
@@ -49,6 +48,12 @@ html,body{
 
 .laser.inimigo{
     background-color: red;
+}
+
+.explosao{
+  width: 50px;
+  height: 50px;
+  position: fixed;
 }
 
 /*glow for webkit*/
